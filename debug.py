@@ -58,11 +58,12 @@ compile = True # use PyTorch 2.0 to compile the model to be faster
 
 
 model_args = dict(n_layer=n_layer, n_head=n_head, n_embd=n_embd, block_size=block_size,
-                  bias=bias, vocab_size=None, dropout=dropout) #, gem=gem) # start with model_args from command line
+                  bias=bias, vocab_size=None, dropout=dropout, gem=gem) # start with model_args from command line
 
 print(f"Resuming training from {out_dir}")
 # resume training from a checkpoint.
-ckpt_path = os.path.join("/home/brothag1/code/gem/nanoGPT/out", 'ckpt_baseline_3.52.pt')
+ckpt_path = os.path.join("/home/brothag1/code/gem/nanoGPT/out", 'ckpt.pt')
+# ckpt_path = os.path.join("/home/brothag1/code/gem/nanoGPT/out", 'ckpt_baseline_3.52.pt')
 checkpoint = torch.load(ckpt_path, map_location=device)
 checkpoint_model_args = checkpoint['model_args']
 # force these config attributes to be equal otherwise we can't even resume training
@@ -87,6 +88,7 @@ best_val_loss = checkpoint['best_val_loss']
 
 ## EVALUATE SIMILARITY OF EMB + OUT PROJ TO PSEUDO INVERSE
 # model.transformer.h[1].attn.c_proj.weight
+A = model.transformer.h[0].attn.p
 A = model.transformer.h[1].attn.c_proj.weight
 P = model.transformer.wpe.weight
 U = model.transformer.wte.weight
